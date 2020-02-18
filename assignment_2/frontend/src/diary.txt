@@ -1,0 +1,24 @@
+Date      Start     Stop      Activity      Comments
+01/08/19  13:00     18:30     Reading       read specs and began to code
+01/08/19  20:00     22:30     coding        implemented login of level 0
+02/08/19  13:30     15:00     debugging     fix bug in login 
+03/08/19  16:00     19:00     coding        implemented registration of level 0
+04/08/19  13:00     17:00     debugging     fix bug in registration
+05/08/19  18:00     20:40     coding        implemented feed interface of level 0
+06/08/19  20:50     22:10     coding        implemented login of level 1
+07/08/19  17:10     18:50     debugging     fix bug in login
+08/08/19  20:20     21:00     coding        implemented registration of level 1
+09/08/19  16:20     18:30     coding        implemented feed interface of level 1
+10/08/19  16:30     18:30     debugging     fix bug in feed interface
+11/08/19  18:30     18:40     testing       run the test for assignment 2
+11/08/19  20:30     23:50     coding        implemented profile of level 2
+12/08/19  16:50     17:30     coding        implemented show upvotes of level 2
+12/08/19  19:30     21:30     coding        implemented show comments of level 2
+12/08/19  22:00     23:50     coding        implemented upvote the user content of level 2
+13/08/19  12:50     13:55     coding        implemented upvote the post new content of level 2
+13/08/19  14:30     16:00     coding        implemented pagination of level 2
+13/08/19  16:00     17:30     coding    	implemented update profile of level 3
+13/08/19  17:30     18:40     coding	    implemented infinite scroll of level 3
+13/08/19  19:00     20:00     coding     	implemented follow and unfollow function of level 3
+13/08/19  20:00     21:00     coding        implemented cmments function of level 3
+13/08/19  21:00     22:00     coding        implemented User Pages function of level 3
