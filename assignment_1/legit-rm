@@ -1,0 +1,136 @@
+#!/bin/dash
+
+#check the .legit is exit or not
+if test ! -d ".legit"
+then 
+	echo "legit-rm: error: no .legit directory containing legit repository exists"
+	exit 1
+fi
+
+
+#get the number for the commit file from the log.txt file
+if test -f ".legit/log.txt"
+then
+	number=`tail -n1 ".legit/log.txt" | cut -d' ' -f1`
+fi
+
+
+
+			
+#when the command is "legit-rm --force", remove file from the working directory and index directory		
+if test $1 = '--force' && test $2 != '--cached'
+then 
+	for file in $@
+	do 
+		if test $file != '--force' && test $file != '--cached'
+		then
+			if test ! -f ".legit/index/$file"
+			then
+				echo "legit-rm: error: '$file' is not in the legit repository"
+				exit 1
+			fi
+			if test ! -f "$file"
+			then
+				continue
+			fi
+			rm ".legit/index/$file"
+			rm "./$file"
+		 fi
+	done
+fi
+		
+
+#when the command is "legit-rm --force --cached", remove file from the index directory	
+if test $1 = '--force' && test $2 = '--cached'
+then
+	for file in $@
+	do 
+		if test $file != '--force' && test $file != '--cached'
+		then
+			if test ! -f ".legit/index/$file"
+			then
+				echo "legit-rm: error: '$file' is not in the legit repository"
+				exit 1
+			fi
+			rm ".legit/index/$file"
+		 fi
+	done
+fi
+	
+			
+
+#when the command is "legit-rm --cached", remove file from the index directory
+if test $1 = '--cached' && test $2 != '--forced'
+then
+	for file in $@
+	do
+		if test $file != '--cached' && test $file != '--forced'
+		then
+			if test ! -f ".legit/index/$file"
+			then
+				echo "legit-rm: error: '$file' is not in the legit repository"
+				exit 1
+			fi
+			#when file in working directory is different from index directory and file in commit directory is different from index directory
+			if ! cmp -s ".legit/index/$file" "./$file" && ! cmp -s ".legit/index/$file" ".legit/commit/commit_$number/$file"
+			then 
+				echo "legit-rm: error: '$file' in index is different to both working file and repository"
+				exit 1
+			fi
+			rm ".legit/index/$file"
+		fi
+	done
+fi
+
+
+#when the command is "legit-rm", remove file from the working directory and the index directory
+if test $1 != '--cached' && test $1 != '--force'
+then 
+	for file in $@
+	do 
+		if test $file != '--cached' && test $file != '--forced'
+		then
+			if test ! -f ".legit/index/$file"
+			then
+				echo "legit-rm: error: '$file' is not in the legit repository"
+				exit 1
+			fi
+			if test ! -f ".legit/commit/commit_$number/$file"
+			then
+				echo "legit-rm: error: '$file' has changes staged in the index"
+				exit 1
+			fi
+			#when the file in index directory and working directory is same and file in index directory and commit directory is different
+			if cmp -s ".legit/index/$file" "./$file" && ! cmp -s ".legit/index/$file" ".legit/commit/commit_$number/$file"
+			then
+				echo "legit-rm: error: '$file' has changes staged in the index"
+				exit 1
+			fi
+				
+			#when the file in index directory and working directory is different and file in index directory and commit directory is different
+			if ! cmp -s ".legit/index/$file" "./$file" && ! cmp -s ".legit/index/$file" ".legit/commit/commit_$number/$file"
+			then 
+				echo "legit-rm: error: '$file' in index is different to both working file and repository"
+				exit 1
+			fi
+			
+			if ! cmp -s ".legit/commit/commit_$number/$file" "./$file"
+			then
+				echo "legit-rm: error: '$file' in repository is different to working file"
+				exit 1
+			fi
+
+			rm ".legit/index/$file"
+			rm "./$file"
+			
+		fi
+	done
+fi
+
+
+
+
+
+
+
+

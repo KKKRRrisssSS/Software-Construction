@@ -1,0 +1,64 @@
+#!/bin/dash
+
+#check the .legit is exit or not
+if test ! -d ".legit"
+then 
+	echo "legit-add: error: no .legit directory containing legit repository exists"
+	exit 1
+fi
+
+#check the number od arguments of input
+if test $# -le 0
+then
+	echo "Usage: legit-add <file>"
+	exit 1
+fi
+
+#create a function to check the filename is valid or not
+check_filename() {
+	check=`echo "$1" | egrep -E '^[a-zA-Z0-9]+[a-zA-Z0-9._\-]*$'`
+	if test ! $check 
+	#if test $1 !~ /^[a-zA-Z0-9]+[a-zA-Z0-9\.\-\_]*$/
+	then 
+		echo "legit-add: error: invalid filename "$1""
+		exit 1
+	fi
+}
+
+
+
+for file in $@
+do
+	#check the filename is valid or not
+	check_filename $file
+	
+	#check the file is ordinary or not
+	if test -d $file
+	then
+		echo "legit-add: error: '$file' is not an ordinary file"
+		exit 1
+	fi	
+	
+	#check the file exit in the working directory or not
+	if test ! -f $file && test ! -f ".legit/index/$file"
+	then 
+		echo "legit-add: error: can not open 'non_existent_file'"
+		exit 1
+	fi
+done
+
+	
+	
+for file in $@
+do
+	if test ! -f $file && test -f ".legit/index/$file"
+	then 
+		#if file in index and not in working directory, remove the file
+		rm ".legit/index/$file"
+	else
+		#copy the file in the working directory to index directory
+		cp "$file" ".legit/index"
+	fi
+done
+	
+	  

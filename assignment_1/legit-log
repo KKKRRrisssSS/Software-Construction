@@ -1,0 +1,26 @@
+#!/bin/dash
+
+
+#check the .legit is exit or not
+if test ! -d ".legit"
+then 
+	echo "legit-log: error: no .legit directory containing legit repository exists"
+	exit 1
+fi
+
+#check the number od arguments of input
+if test $# -ge 1
+then 
+	echo "Usage: $0"
+	exit 1
+fi
+
+
+#print the content of log file
+for line in ".legit/log.txt"
+do 
+	tac $line
+done
+
+
+

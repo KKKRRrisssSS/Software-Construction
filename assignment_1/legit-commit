@@ -1,0 +1,133 @@
+#!/bin/dash
+
+#check the .legit exists or not
+if test ! -d ".legit"
+then 
+	echo "legit-commit: error: no .legit directory containing legit repository exists"
+	exit 1
+fi
+
+
+#check the number of argument is valid or not
+if test $# -gt 3 || test $# -lt 2
+then 
+	echo "Usage: $0 commit [-a] -m commit-message"
+	exit 1
+fi 
+
+
+#create a function to check the directory is empty or not
+is_empty_dir() {
+	number_of_file=`ls -A $1|wc -w`
+	if test $number_of_file -eq 0
+	then 
+		return 0
+	else
+		return 1
+	fi 
+}
+
+
+#create a function to check the directory is modified or not
+is_modified() {
+	dir_1=$1
+	dir_2=$2
+	number_1=`ls -1 $dir_1 | wc -l`
+	number_2=`ls -1 $dir_2 | wc -l`
+	#number_1=`ls -l $dir_1| grep "^-" | wc -l`
+	if test $number_1 -eq 0 && test $number_2 -eq 0
+	then
+		return 1
+	fi
+	if test $number_1 -ne $number_2
+	then 
+		return 0
+	fi
+	for file_1 in "$dir_1/"* 
+	do 
+		filename=`basename $file_1`
+		if ! cmp -s "$file_1" "$dir_2/$filename"
+		then 
+			return 0
+		fi
+	done
+	return 1
+}
+		
+		
+#check if index and commit are both empty directory
+if is_empty_dir ".legit/index" && is_empty_dir ".legit/commit" 
+then
+	echo "nothing to commit"
+	exit 1
+fi
+
+#if use "-a" command, add file from working directory to commit directory
+if test $1 = "-a"
+then
+	for file in ".legit/index/"*
+	do
+		filename=`basename $file`
+		if test ! -f $filename
+		then
+			continue
+		fi
+		#cp "$filename" ".legit/index"
+		legit-add "$filename"
+	done
+fi
+	
+
+
+#create index number for the commit files
+index_number=0
+
+
+#get the index number of next commit file
+while test -e ".legit/commit/commit_$index_number"
+do
+	index_number=`expr $index_number + 1`
+done
+
+
+#check the last commit file is changed or not
+if test $index_number -gt 0
+then
+	last_index_number=`expr $index_number - 1`
+	if ! is_modified ".legit/index" ".legit/commit/commit_$last_index_number"
+	then
+		echo "nothing to commit"
+		exit 1
+	fi
+fi
+
+
+
+
+#make the new commit file 
+mkdir ".legit/commit/commit_$index_number"
+
+
+#write the index number and input to the log.txt
+if test $# -eq 2
+then
+	echo "$index_number $2" >>  ".legit/log.txt"
+fi
+if test $# -eq 3
+then
+	echo "$index_number $3" >>  ".legit/log.txt"
+fi
+
+	
+#if the index directory is not empty, copy the file from the index to commit directory
+if ! is_empty_dir ".legit/index"
+then
+	for file in ".legit/index/"*
+	do 
+		filename=`basename $file`
+		cp "$file" ".legit/commit/commit_$index_number/$filename"
+	done
+fi
+
+#print commit as commit_number
+echo "Committed as commit $index_number"

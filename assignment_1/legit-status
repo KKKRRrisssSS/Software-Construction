@@ -1,0 +1,128 @@
+#!/bin/dash
+
+
+#check the .legit exists or not
+if test ! -d ".legit"
+then 
+	echo "legit-status: error: no .legit directory containing legit repository exists"
+	exit 1
+fi
+
+#get the number for the commit file from the log.txt file
+if test -f ".legit/log.txt"
+then
+	number=`tail -n1 ".legit/log.txt" | cut -d' ' -f1`
+fi
+
+#refresh the status file
+echo "" > ".legit/status.txt"
+
+
+#check the file in the working directory
+for file in *
+do
+	if test ! -f "$file"
+	then
+		continue
+	fi
+	filename=`basename $file`
+	if test -f ".legit/index/$filename"
+	then
+		if test -f ".legit/commit/commit_$number/$filename"
+		then
+			#if file in working directory is different from file in commit directory and file in working directory is same as file in index directory
+			if ! cmp -s $file ".legit/commit/commit_$number/$filename" && cmp -s $file ".legit/index/$filename"
+			then
+				echo "$filename - file changed, changes staged for commit" >> ".legit/status.txt"
+				continue
+			fi
+			#if file in working directory is different from file in commit directory and file in working directory is different from file in index directory and file in index directory is different from file in commit directory
+			if ! cmp -s $file ".legit/commit/commit_$number/$filename" && ! cmp -s $file ".legit/index/$filename" && ! cmp -s ".legit/commit/commit_$number/$filename" ".legit/index/$filename"
+			then
+				echo "$filename - file changed, different changes staged for commit" >> ".legit/status.txt"
+				continue
+			fi
+			#if file in working directory is same as file in commit directory and file in working directory is different from file in index directory
+			if cmp -s $file ".legit/commit/commit_$number/$filename" && ! cmp -s $file ".legit/index/$filename"
+			then
+				echo "$filename - file changed, different changes staged for commit" >> ".legit/status.txt"
+				continue
+			fi
+			#if file in working directory is different from file in commit directory and file in working directory is different from file in index directory and file in index directory is same as file in commit directory
+			if ! cmp -s $file ".legit/commit/commit_$number/$filename" && ! cmp -s $file ".legit/index/$filename" && cmp -s ".legit/commit/commit_$number/$filename" ".legit/index/$filename"
+			then
+				
+				echo "$filename - file changed, changes not staged for commit" >> ".legit/status.txt"
+				continue
+			fi
+			#if file in working directory is same as file in index directory and file in working directory is same as file in commit directory and file in index directory is same as file in commit directory
+			if cmp -s $file ".legit/index/$filename" && cmp -s $file ".legit/commit/commit_$number/$filename" && cmp -s ".legit/index/$filename" ".legit/commit/commit_$number/$filename"
+			then
+				echo "$filename - same as repo" >> ".legit/status.txt"
+				continue
+			fi
+		else
+			echo "$filename - added to index" >> ".legit/status.txt"
+			continue
+		fi
+	elif test -f ".legit/commit/commit_$number/$filename"
+	then
+		echo "$filename - untracked" >> ".legit/status.txt"
+		continue
+	else
+		echo "$filename - untracked" >> ".legit/status.txt"
+		continue
+	fi
+done
+	
+	
+#check the file in the index directory		
+for file in ".legit/index/"*
+do 
+	if test ! -f "$file"
+	then
+		continue
+	fi
+	filename=`basename $file`
+	if test ! -f "$filename"
+	then
+		#if file not exists in commit file
+		if test ! -f ".legit/commit/commit_$number/$filename"
+		then
+			echo "$filename - added to index" >> ".legit/status.txt"
+			continue
+		fi
+		#if file in working directory is same as file in commit directory
+		if cmp -s $file ".legit/commit/commit_$number/$filename"
+		then
+			echo "$filename - file deleted" >> ".legit/status.txt"
+			continue
+		
+		else
+			echo "$filename - file changed, different changes staged for commit" >> ".legit/status.txt"
+			continue
+		fi
+	fi
+done
+	
+	
+
+#check the file in the commit directory
+for file in ".legit/commit/commit_$number/"*
+do
+	if test ! -f "$file"
+	then
+		continue
+	fi
+	filename=`basename $file`
+	#if file not exist in working directory and file not exist in index directory
+	if test ! -f "./$filename" && test ! -f ".legit/index/$filename" 
+	then 
+		echo "$filename - deleted" >> ".legit/status.txt"
+		continue
+	fi
+done
+
+#print the content in the status file
+sort ".legit/status.txt" | tail -n +2|cat
+	

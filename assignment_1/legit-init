@@ -1,0 +1,25 @@
+#!/bin/dash
+
+
+#legit-init part
+#check the input of legit-init
+if test $# -ge 1
+then 
+	echo "Usage: $0"
+	exit 1
+fi
+#check the .legit is exist or not
+if test -d ".legit"
+	 then echo "legit-init: error: .legit already exists"
+	 exit 1
+else
+	mkdir ".legit"
+	mkdir ".legit/index"
+	mkdir ".legit/commit"
+	mkdir ".legit/log"
+	touch ".legit/log.txt"
+	touch ".legit/status.txt"
+	echo "Initialized empty legit repository in .legit"
+fi
+
+

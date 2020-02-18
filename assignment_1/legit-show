@@ -1,0 +1,52 @@
+#!/bin/dash
+
+
+#check the .legit exists or not
+if test ! -d ".legit"
+then 
+	echo "legit-show: error: no .legit directory containing legit repository exists"
+	exit 1
+fi
+
+#get the file directory from the input
+show_dir=`echo $1 | sed 's/:.*$//'`
+show_dir_test=`echo $1 | sed 's/:.*$/'7'/'`
+
+
+#get the file name from the input
+show_file=`echo $1 | sed 's/^.*://'`
+
+
+#print the corresponding file content according to the input
+if test $show_dir_test = '7'
+then
+	if test ! -f ".legit/index/$show_file"
+	then 
+		echo "legit-show: error: '$show_file' not found in index"
+		exit 1
+	else
+		cat ".legit/index/$show_file"
+	fi
+else
+	if test ! -d ".legit/commit/commit_$show_dir"
+	then
+		echo "legit-show: error: unknown commit '$show_dir'"
+		exit 1
+	elif test ! -f ".legit/commit/commit_$show_dir/$show_file"
+	then 
+		echo "legit-show: error: '$show_file' not found in commit $show_dir"
+		exit 1
+	else
+		cat ".legit/commit/commit_$show_dir/$show_file"
+	fi
+fi	
+	
+	
+
+
+
+
+
+	
+
+

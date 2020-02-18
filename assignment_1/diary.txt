@@ -1,0 +1,23 @@
+Date      Start     Stop      Activity      Comments
+01/07/19  13:00     14:30     Reading       read specs and began to code
+01/07/19  21:00     22:30     coding        implemented init, add
+02/07/19  13:30     15:00     debugging     fix bug in add function
+03/07/19  16:00     19:00     coding        implemented commit function
+04/07/19  13:00     17:00     debugging     fix commit no change
+05/07/19  18:00     20:40     coding        implemented log function
+06/07/19  20:50     22:10     coding        implemented show function
+07/07/19  17:10     18:50     debugging     fix bug in show and commit function
+08/07/19  20:20     21:00     testing       fix bug in commit and add to pass autotest_subset0
+09/07/19  16:20     18:30     coding        implemented commit -a function
+10/07/19  16:30     18:30     debugging     fix bug in commit -m
+11/07/19  18:30     18:40     testing       pass autotest_subset1 commit -a part
+12/07/19  14:30     16:50     coding        implemented rm function
+12/07/19  16:50     17:30     debugging     fix bug in rm --cached
+12/07/19  19:30     21:30     coding        implemented rm errors
+13/07/19  09:30     10:50     debugging     fix bug in rm errors
+13/07/19  10:50     11:10     testing       pass autotest_subset1 rm part
+13/07/19  13:30     16:00     coding        implemented status function
+13/07/19  17:00     18:30     debugging     fix bug in status function
+13/07/19  19:30     20:40     debugging     fix bug in commit function
+13/07/19  21:00     22:40     debugging     fix bug in add function
+13/07/19  22:40     22:50     testing       pass autotest_subset1
